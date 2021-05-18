@@ -1,0 +1,42 @@
+set -e
+GREEN='\033[0;32m'
+WHITE='\033[1;37m'
+YELLOW='\033[1;33m'
+BLACK='\033[0;30m'
+RED='\033[33;31m'
+
+clocRunning() {
+    echo -e "${YELLOW}> PRT Cloc running... ${GREEN}"
+    echo "PATH CLOC : ${PATH_CLOC}"
+    if [[ "$PATH_CLOC" == "all" ]]; then
+        cloc $(git ls-files) --exclude-ext=phar,json
+    else
+        cloc $PATH_CLOC --exclude-ext=phar,json
+    fi
+    echo -e ${WHITE}
+}
+
+
+
+
+case $1 in
+    "cloc")
+        clocRunning
+        ;;
+    "coverage")
+        #something
+        echo -e "${YELLOW}> PRT Get coverage reports....${WHITE}"
+        ;;
+    *)
+        echo -e "${RED}Not found command"
+        echo -e "${GREEN}Please follow guideline"
+        echo -e ${WHITE}
+        echo -e "Usage:"
+        echo "prt <task>"
+        echo "Task in cloc, coverage"
+        echo "Example: prt cloc "
+        exit
+esac
+
+
+

@@ -7,13 +7,12 @@ RUN apk add --no-cache cloc \
     git && \
     rm -rf /var/cache/apk/*
 
-ARG PATH_CLOC=app \
-    TOKEN \
-    ENDPOINT
+ENV PATH_CLOC="app tests" \
+    TOKEN="token-prt" \
+    ENDPOINT="prt-api"
 
-COPY prt-runner /usr/bin/prt-runner
-RUN chmod +x /usr/bin/prt-runner
+COPY prt /usr/bin/prt
+RUN chmod +x /usr/bin/prt
 
 CMD tail -f /dev/null
 
-# ENTRYPOINT cloc ${PATH_CLOC}
