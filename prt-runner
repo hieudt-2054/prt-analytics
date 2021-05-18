@@ -1,0 +1,7 @@
+echo "============PRT_START============="
+echo "PATH CLOC : ${PATH_CLOC}"
+if [[ $PATH_CLOC == "all" ]]; then
+    cloc $(git ls-files) --exclude-ext=phar,json
+else
+    cloc $PATH_CLOC --exclude-ext=phar,json
+fi
