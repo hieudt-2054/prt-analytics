@@ -4,7 +4,8 @@ MAINTAINER HieuDT<duong.trung.hieu@sun-asterisk.com>
 
 RUN apk add --no-cache cloc \
 	curl \
-    git && \
+    git \
+    grep=3.6-r0 && \
     rm -rf /var/cache/apk/*
 
 ENV PATH_CLOC="app tests" \
