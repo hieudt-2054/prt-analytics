@@ -5,13 +5,15 @@ YELLOW='\033[1;33m'
 BLACK='\033[0;30m'
 RED='\033[33;31m'
 
+dataCloc={}
+
 clocRunning() {
     echo -e "${YELLOW}> PRT Cloc running... ${GREEN}"
     echo "PATH CLOC : ${PATH_CLOC}"
     if [[ "$PATH_CLOC" == "all" ]]; then
-        cloc $(git ls-files) --exclude-ext=phar,json
+        dataCloc=$(cloc $(git ls-files) --exclude-ext=phar,json --json)
     else
-        cloc $PATH_CLOC --exclude-ext=phar,json
+        dataCloc=$(cloc $PATH_CLOC --exclude-ext=phar,json --json)
     fi
     echo -e ${WHITE}
 }
@@ -23,7 +25,8 @@ getCoverage() {
     echo -e "Token: ${TOKEN}"
     echo -e "Endpoint: ${ENDPOINT}"
     echo -e "Value: ${value}"
-    curl -d "code=${TOKEN}&value=$(echo ${value/./%2E})&branch=$(echo $CI_BRANCH)" -X POST ${ENDPOINT}
+    echo -e "Cloc: ${dataCloc}"
+    curl -d "code=${TOKEN}&value=$(echo ${value/./%2E})&branch=$(echo $CI_BRANCH)&cloc=${dataCloc}" -X POST ${ENDPOINT}
 }
 
 
