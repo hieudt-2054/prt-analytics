@@ -18,7 +18,9 @@ if [ $CI_WEBHOOK_EVENT ]; then
 fi
 
 if [ $CIRCLECI ]; then
-    ciBranch=${CIRCLE_BRANCH}
+    echo curl "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls/${CIRCLE_PULL_REQUEST##*/}"
+    curl "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls/${CIRCLE_PULL_REQUEST##*/}"
+    ciBranch=`curl -s https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls/${CIRCLE_PULL_REQUEST##*/} | jq -r '.base.ref'`
     ciEvent=${CIRCLE_PULL_REQUEST}
 fi
 
