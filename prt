@@ -6,6 +6,21 @@ BLACK='\033[0;30m'
 RED='\033[33;31m'
 
 dataCloc={}
+ciBranch=""
+ciEvent=""
+
+if [ $CI_BRANCH ]; then
+    ciBranch=${CI_BRANCH}
+fi
+
+if [ $CI_WEBHOOK_EVENT ]; then
+    ciEvent=${CI_WEBHOOK_EVENT}
+fi
+
+if [ $CIRCLECI ]; then
+    ciBranch=${CIRCLE_BRANCH}
+    ciEvent=${CIRCLE_PULL_REQUEST}
+fi
 
 clocRunning() {
     echo -e "${YELLOW}> PRT Cloc running... ${GREEN}"
@@ -18,16 +33,30 @@ clocRunning() {
     echo -e ${WHITE}
 }
 
-getCoverage() {
+getCoverageHtmlPhp() {
     clocRunning
-    echo -e "${YELLOW}> PRT Coverage running... ${GREEN}"
-    echo -e "Branch: ${CI_BRANCH}"
+    echo -e "${YELLOW}> PRT Coverage (Html - PHP) running... ${GREEN}"
+    echo -e "Branch: ${ciBranch}"
     value=$(echo "$(cat coverage/index.html)" | grep -Pzo '>Total</td>(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}\% covered' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
     echo -e "Token: ${TOKEN}"
     echo -e "Endpoint: ${ENDPOINT}"
     echo -e "Value: ${value}"
     echo -e "Cloc: ${dataCloc}"
-    curl -d "code=${TOKEN}&value=$(echo ${value/./%2E})&branch=$(echo $CI_BRANCH)&cloc=${dataCloc}" -X POST ${ENDPOINT} --trace-ascii /dev/stdout
+    echo -e "CI Event: ${ciEvent}"
+    curl -d "ci_event=${ciEvent}&code=${TOKEN}&value=$(echo ${value/./%2E})&branch=$(echo $ciBranch)&cloc=${dataCloc}" -X POST ${ENDPOINT} --trace-ascii /dev/stdout
+}
+
+getCoverageJsonRuby() {
+    clocRunning
+    echo -e "${YELLOW}> PRT Coverage (JSON - Ruby) running... ${GREEN}"
+    echo -e "Branch: ${ciBranch}"
+    value="$(cat coverage/.last_run.json | grep -oP '"covered_percent":\K[0-9, .]+')"
+    echo -e "Token: ${TOKEN}"
+    echo -e "Endpoint: ${ENDPOINT}"
+    echo -e "Value: ${value}"
+    echo -e "Cloc: ${dataCloc}"
+    echo -e "CI Event: ${ciEvent}"
+    curl -d "ci_event=${ciEvent}&code=${TOKEN}&value=$(echo ${value/./%2E})&branch=$(echo $ciBranch)&cloc=${dataCloc}" -X POST ${ENDPOINT} --trace-ascii /dev/stdout
 }
 
 
@@ -36,18 +65,19 @@ case $1 in
     "cloc")
         clocRunning
         ;;
-    "coverage")
-        #something
-        getCoverage
+    "php-html")
+        getCoverageHtmlPhp
+        ;;
+    "ruby-json")
+        getCoverageJsonRuby
         ;;
     *)
         echo -e "${RED}Not found command"
         echo -e "${GREEN}Please follow guideline"
         echo -e ${WHITE}
         echo -e "Usage:"
-        echo "prt <task>"
-        echo "Task in cloc, coverage"
-        echo "Example: prt cloc "
+        echo "prt <language: php|ruby>"
+        echo "Example: prt php "
         exit
 esac
 
