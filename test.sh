@@ -6,8 +6,8 @@ BLACK='\033[0;30m'
 RED='\033[33;31m'
 
 ############# Changes Log
-phpSupportType="html,xml,"
-rubySupportType="html,json,"
+phpSupportType="html,"
+rubySupportType="json,"
 #############
 
 dataCloc=""
@@ -55,9 +55,6 @@ function executor() {
                 "html")
                     value=$(echo "$(cat coverage/index.html)" | grep -Pzo '>Total</td>(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}\% covered' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
                     ;;
-                "xml")
-                    value=$(echo "$(cat coverage/index.xml)" | grep -Pzo 'percent="(.*\n.*)"' | head -n 1 | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
-                    ;;
                 *)
                     echo -e "${RED}Type invalid, PHP supported format: ${phpSupportType}"
                     exit
@@ -67,9 +64,6 @@ function executor() {
             case $2 in
                 "json")
                     value="$(cat coverage/.last_run.json | grep -oP '"covered_percent":\K[0-9, .]+')"
-                    ;;
-                "html")
-                    value=$(echo "$(cat coverage/index.html)" | grep -Pzo '"covered_percent"(.*\n.*){1}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,3}\%' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
                     ;;
                 *)
                     echo -e "${RED}Type invalid, Ruby supported format: ${rubySupportType}"
@@ -99,9 +93,6 @@ case $1 in
         ;;
     "ruby-json")
         executor 'ruby' 'json'
-        ;;
-    "ruby-html")
-        executor 'ruby' 'html'
         ;;
     *)
         echo -e "${RED}Not found command"
