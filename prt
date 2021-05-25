@@ -97,6 +97,9 @@ case $1 in
     "php-html")
         executor 'php' 'html'
         ;;
+    "php-xml")
+	executor 'php' 'xml'
+	;;
     "ruby-json")
         executor 'ruby' 'json'
         ;;
