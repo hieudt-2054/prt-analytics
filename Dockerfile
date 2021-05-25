@@ -15,6 +15,7 @@ ENV PATH_CLOC="app tests" \
 
 COPY prt /usr/bin/prt
 RUN chmod +x /usr/bin/prt
+RUN git config --global core.quotepath off
 
 CMD tail -f /dev/null
 
