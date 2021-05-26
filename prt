@@ -34,10 +34,13 @@ clocRunning() {
     echo -e "${YELLOW}> PRT Cloc running... ${GREEN}"
     echo "PATH CLOC : ${PATH_CLOC}"
     if [[ "$PATH_CLOC" == "all" ]]; then
+	echo -e "${GREEN} ALL: cloc $(echo $PATH_CLOC) --exclude-ext=phar,json --json)"
         dataCloc=$(cloc $(git ls-files) --exclude-ext=phar,json --json)
     else
-        dataCloc=$(cloc $PATH_CLOC --exclude-ext=phar,json --json)
+	echo -e "${GREEN} PATH: cloc $(echo $PATH_CLOC) --exclude-ext=phar,json --json)"
+        dataCloc=$(cloc $(echo $PATH_CLOC) --exclude-ext=phar,json --json)
     fi
+    echo $dataCloc
     echo -e ${WHITE}
 }
 
@@ -51,12 +54,17 @@ function executor() {
 
     case $1 in
         "php")
+            echo -e "${GREEN}Lang: PHP"
             case $2 in
                 "html")
+                    echo -e "${GREEN}Output: HTML"
                     value=$(echo "$(cat coverage/index.html)" | grep -Pzo '>Total</td>(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}\% covered' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
+                    echo -e "${GREEN} Value: $value"
                     ;;
                 "xml")
+                    echo -e "${GREEN}Output: XML"
                     value=$(echo "$(cat coverage/index.xml)" | grep -Pzo 'percent="(.*\n.*)"' | head -n 1 | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
+                    echo -e "${GREEN} Value: $value"
                     ;;
                 *)
                     echo -e "${RED}Type invalid, PHP supported format: ${phpSupportType}"
@@ -64,12 +72,17 @@ function executor() {
             esac
             ;;
         "ruby")
+            echo -e "${GREEN}Lang: Ruby"
             case $2 in
                 "json")
+                    echo -e "${GREEN}Output: Json"
                     value="$(cat coverage/.last_run.json | grep -oP '"covered_percent":\K[0-9, .]+')"
+                    echo -e "${GREEN} Value: $value"
                     ;;
                 "html")
-                    value=$(echo "$(cat coverage/index.html)" | grep -Pzo '"covered_percent"(.*\n.*){1}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,3}\%' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
+                    echo -e "${GREEN}Output: HTML"
+                    value=$(echo "$(cat coverage/index.html)" | grep -Pzo '"covered_percent"(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,3}\%' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
+                    echo -e "${GREEN} Value: $value"
                     ;;
                 *)
                     echo -e "${RED}Type invalid, Ruby supported format: ${rubySupportType}"
@@ -97,6 +110,9 @@ case $1 in
     "php-html")
         executor 'php' 'html'
         ;;
+    "php-xml")
+	    executor 'php' 'xml'
+	    ;;
     "ruby-json")
         executor 'ruby' 'json'
         ;;
