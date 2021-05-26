@@ -58,12 +58,12 @@ function executor() {
             case $2 in
                 "html")
                     echo -e "${GREEN}Output: HTML"
-                    value=$(echo "$(cat coverage/index.html)" | grep -Pzo '>Total</td>(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}\% covered' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
+                    value=$(echo "$(cat coverage/index.html)" | grep -Pzo '>Total</td>(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}\% covered' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}' | cut -d% -f1 | head -1)
                     echo -e "${GREEN} Value: $value"
                     ;;
                 "xml")
                     echo -e "${GREEN}Output: XML"
-                    value=$(echo "$(cat coverage/index.xml)" | grep -Pzo 'percent="(.*\n.*)"' | head -n 1 | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
+                    value=$(echo "$(cat coverage/index.xml)" | grep -Pzo 'percent="(.*\n.*)"' | head -n 1 | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}' | cut -d% -f1 | head -1)
                     echo -e "${GREEN} Value: $value"
                     ;;
                 *)
@@ -76,12 +76,12 @@ function executor() {
             case $2 in
                 "json")
                     echo -e "${GREEN}Output: Json"
-                    value="$(cat coverage/.last_run.json | grep -oP '"covered_percent":\K[0-9, .]+')"
+                    value="$(cat coverage/.last_run.json | grep -oP '"covered_percent":\K[0-9, .]+' | cut -d% -f1 | head -1)"
                     echo -e "${GREEN} Value: $value"
                     ;;
                 "html")
                     echo -e "${GREEN}Output: HTML"
-                    value=$(echo "$(cat coverage/index.html)" | grep -Pzo '"covered_percent"(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,3}\%' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
+                    value=$(echo "$(cat coverage/index.html)" | grep -Pzo '"covered_percent"(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,3}\%' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}' | cut -d% -f1 | head -1)
                     echo -e "${GREEN} Value: $value"
                     ;;
                 *)
