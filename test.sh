@@ -48,12 +48,13 @@ function executor() {
     # $2 is Format Type
     clocRunning
     value=0
+    echo "PATH COVERAGE : ${PATH_COVERAGE}"
 
     case $1 in
         "php")
             case $2 in
                 "html")
-                    value=$(echo "$(cat coverage/index.html)" | grep -Pzo '>Total</td>(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}\% covered' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
+                    value=$(echo "$(cat $PATH_COVERAGE/index.html)" | grep -Pzo '>Total</td>(.*\n.*){3}' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}\% covered' | grep -Pzo '[0-9]{1,3}\.[0-9]{1,2}')
                     ;;
                 *)
                     echo -e "${RED}Type invalid, PHP supported format: ${phpSupportType}"
@@ -63,7 +64,7 @@ function executor() {
         "ruby")
             case $2 in
                 "json")
-                    value="$(cat coverage/.last_run.json | grep -oP '"covered_percent":\K[0-9, .]+')"
+                    value="$(cat $PATH_COVERAGE/.last_run.json | grep -oP '"covered_percent":\K[0-9, .]+')"
                     ;;
                 *)
                     echo -e "${RED}Type invalid, Ruby supported format: ${rubySupportType}"
