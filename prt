@@ -98,6 +98,16 @@ function executor() {
                     value=$(echo "$(cat $PATH_COVERAGE/index.html)" | grep -oP '<span class="pc_cov"(?:\s[^>]*)?>\K.*?(?=%</span>)')
                     echo -e "${GREEN} Value: $value"
                     ;;
+                "json")
+                    echo -e "${GREEN}Output: Json"
+                    value="$(cat $PATH_COVERAGE | grep '"percent_covered": *' | sed 's/^.*: //' | sed -e 's/,//' | tail -1)"
+                    echo -e "${GREEN} Value: $value"
+                    ;;
+                "xml")
+                    echo -e "${GREEN}Output: XML"
+                    value=$(echo 100*$(cat $PATH_COVERAGE | grep '<coverage' | sed -n 's/.*line-rate="\([^"]*\).*/\1/p') | bc -l)
+                    echo -e "${GREEN} Value: $value"
+                    ;;
                 *)
                     echo -e "${RED}Type invalid, Ruby supported format: ${rubySupportType}"
                     exit
@@ -135,6 +145,12 @@ case $1 in
         ;;
     "python-html")
         executor 'python' 'html'
+        ;;
+    "python-json")
+        executor 'python' 'json'
+        ;;
+    "python-xml")
+        executor 'python' 'xml'
         ;;
     *)
         echo -e "${RED}Not found command"
